@@ -66,7 +66,7 @@ int solveMazeDFS(MazeData *data, int maxMoves){
         isvisited[i] = (bool *)malloc(data->columns * sizeof(bool));
     }
 
-    //init bool array with falses
+    //init isvisited array with falses
     for (int i = 0; i < data->rows; i++) {
         for (int j = 0; j < data->columns; j++) {
             isvisited[i][j] = false;
@@ -88,11 +88,11 @@ int solveMazeDFS(MazeData *data, int maxMoves){
     while(!isEmpty(pathstack)){
 
         if(moves > maxMoves){
-             printf("Cannot solve maze by using maximum moves: %d\n", maxMoves);
-             goto CLEAN_DATA;
+             printf("Cannot solve maze by using given maximum moves: %d\n", maxMoves);
+             goto FREE_MEMORY;
         }
 
-        //if exit 'E' found then print solutions and exit from loop
+        //if exit 'E' found then print solution and exit from loop
         if(data->table[current_index.x][current_index.y] == 'E'){
 
             int pathlength = 0;
@@ -107,7 +107,7 @@ int solveMazeDFS(MazeData *data, int maxMoves){
             printf("Maze solved with move count %d!\n", moves);
             printf("Pathlength: %d\n", pathlength);
             
-            goto CLEAN_DATA;
+            goto FREE_MEMORY;
             
         }
 
@@ -154,7 +154,7 @@ int solveMazeDFS(MazeData *data, int maxMoves){
 
     printf("Cannot solve maze\n");
 
-    CLEAN_DATA:
+    FREE_MEMORY:
 
     destroyStack(pathstack);
 
@@ -166,7 +166,7 @@ int solveMazeDFS(MazeData *data, int maxMoves){
   }
 
 
-
+//Dynamically allocate 2d array from given textfile
 int create_array_from_textfile(MazeData *data, FILE *fileptr) {
 
     if (fileptr == NULL) {
@@ -188,7 +188,7 @@ int create_array_from_textfile(MazeData *data, FILE *fileptr) {
         data->table = (char **)realloc(data->table, data->rows * sizeof(char *));
 
         if (data->table == NULL) {
-            perror("memory reallocation failes");
+            perror("memory reallocation failed");
             free(line);
             freeMazeData(data); 
             return -1;
@@ -224,10 +224,9 @@ int main(int argc, char *argv[]) {
         if(argc > 2){
             maxMoves = atoi(argv[2]);
         }
-       
     }
     else{
-        printf("No maze textfile given as argument... Using default: maze1.txt\n\n");
+        printf("No maze textfile given as argument... Using default: maze1.txt max moves: INT_MAX\n\n");
         char filename[] = "maze1.txt";
         fptr = fopen(filename, "r");
     }
